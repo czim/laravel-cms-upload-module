@@ -1,0 +1,30 @@
+{
+    "name": "czim/laravel-cms-upload-module",
+    "description": "Laravel CMS: File Upload Module",
+    "keywords": [ "cms", "laravel", "file", "upload" ],
+    "homepage": "https://github.com/czim",
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.*",
+        "mockery/mockery": "0.9.*",
+        "scrutinizer/ocular": "~1.1",
+        "orchestra/testbench": "~3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Czim\\CmsUploadModule\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Czim\\CmsUploadModule\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
