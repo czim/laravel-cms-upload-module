@@ -1,7 +1,7 @@
 {
     "name": "czim/laravel-cms-upload-module",
     "description": "Laravel CMS: File Upload Module",
-    "keywords": [ "cms", "laravel", "file", "upload" ],
+    "keywords": [ "cms", "laravel", "module", "file", "upload" ],
     "homepage": "https://github.com/czim",
     "require": {
         "php": ">=5.5.9"
