@@ -3,7 +3,6 @@ namespace Czim\CmsUploadModule\Modules;
 
 use Czim\CmsUploadModule\Support\Route\ApiRouteMapper;
 use Czim\CmsUploadModule\Support\Route\WebRouteMapper;
-use Czim\CmsCore\Contracts\Core\CoreInterface;
 use Czim\CmsCore\Contracts\Modules\ModuleInterface;
 use Czim\CmsCore\Support\Enums\AclPresenceType;
 use Illuminate\Routing\Router;
@@ -14,21 +13,8 @@ class UploadModule implements ModuleInterface
     /**
      * @var string
      */
-    const VERSION = '0.0.1';
+    const VERSION = '1.0.0';
 
-
-    /**
-     * @var CoreInterface
-     */
-    protected $core;
-
-    /**
-     * @param CoreInterface $core
-     */
-    public function __construct(CoreInterface $core)
-    {
-        $this->core = $core;
-    }
 
     /**
      * Returns unique identifying key for the module.
