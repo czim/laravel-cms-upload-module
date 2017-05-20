@@ -112,6 +112,15 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     }
 
     /**
+     * @param string $table
+     * @return string
+     */
+    protected function prefixTable($table)
+    {
+        return 'cms_' . $table;
+    }
+
+    /**
      * @return ConsoleKernelContract|Kernel
      */
     protected function getConsoleKernel()
