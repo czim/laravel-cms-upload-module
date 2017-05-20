@@ -3,6 +3,7 @@ namespace Czim\CmsUploadModule\Http\Controllers;
 
 use Czim\CmsCore\Contracts\Core\CoreInterface;
 use Czim\CmsUploadModule\Contracts\Repositories\FileRepositoryInterface;
+use Czim\CmsUploadModule\Contracts\Support\Security\FileCheckerInterface;
 use Czim\CmsUploadModule\Http\Requests\UploadFileRequest;
 use Illuminate\Filesystem\Filesystem;
 
@@ -20,19 +21,27 @@ class FileController extends Controller
     protected $files;
 
     /**
+     * @var FileCheckerInterface
+     */
+    protected $fileChecker;
+
+    /**
      * @param CoreInterface           $core
      * @param FileRepositoryInterface $fileRepository
      * @param Filesystem              $files
+     * @param FileCheckerInterface    $fileChecker
      */
     public function __construct(
         CoreInterface $core,
         FileRepositoryInterface $fileRepository,
-        Filesystem $files
+        Filesystem $files,
+        FileCheckerInterface $fileChecker
     ) {
         parent::__construct($core);
 
         $this->files          = $files;
         $this->fileRepository = $fileRepository;
+        $this->fileChecker    = $fileChecker;
     }
 
     /**
@@ -45,10 +54,16 @@ class FileController extends Controller
         $storeDir  = rtrim(config('cms-upload-module.upload.path'), '/');
         $storePath = $storeDir . '/' . $fileName;
 
-        $path = $request->file('file')->move($storeDir, $fileName);
+        $file = $request->file('file');
+
+        if ( ! $this->fileChecker->check($file->getClientOriginalName(), $file->getMimeType())) {
+            abort(403, "Not allowed to upload file type");
+        }
+
+        $path = $file->move($storeDir, $fileName);
 
         if (false === $path || ! $this->files->exists($storePath)   ) {
-            abort("Error moving uploaded file to {$storePath}");
+            abort(500, "Error moving uploaded file to {$storePath}");
         }
 
         $data = [
