@@ -54,9 +54,10 @@ class FileController extends Controller
         $storeDir  = rtrim(config('cms-upload-module.upload.path'), '/');
         $storePath = $storeDir . '/' . $fileName;
 
-        $file = $request->file('file');
+        $file     = $request->file('file');
+        $mimeType = $file->getMimeType();
 
-        if ( ! $this->fileChecker->check($file->getClientOriginalName(), $file->getMimeType())) {
+        if ( ! $this->fileChecker->check($file->getClientOriginalName(), $mimeType)) {
             abort(403, "Not allowed to upload file type");
         }
 
@@ -81,6 +82,9 @@ class FileController extends Controller
             'success'   => true,
             'id'        => $record->getKey(),
             'reference' => $record->reference,
+            'name'      => $record->name,
+            'size'      => $record->file_size,
+            'mimetype'  => $mimeType,
         ]);
     }
 
