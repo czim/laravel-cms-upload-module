@@ -148,7 +148,7 @@ class FileController extends Controller
                 cms()->log('error', "Failed to delete uploaded file at {$record->path}", ['id' => $id]);
                 return response()->json([
                     'success' => false,
-                    'error'   => cms_trans('upload.error.file-not-found'),
+                    'error'   => cms_trans('upload.error.delete-failed'),
                 ]);
             }
         }
@@ -157,7 +157,7 @@ class FileController extends Controller
             cms()->log('error', "Failed to delete uploaded file #{$id}", ['id' => $id]);
             return response()->json([
                 'success' => false,
-                'error'   => cms_trans('upload.error.file-not-found'),
+                'error'   => cms_trans('upload.error.delete-failed'),
             ]);
         }
 
