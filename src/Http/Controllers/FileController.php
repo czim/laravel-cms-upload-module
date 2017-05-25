@@ -6,6 +6,8 @@ use Czim\CmsUploadModule\Contracts\Repositories\FileRepositoryInterface;
 use Czim\CmsUploadModule\Contracts\Support\Security\FileCheckerInterface;
 use Czim\CmsUploadModule\Http\Requests\UploadFileRequest;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Http\UploadedFile;
+use Validator;
 
 class FileController extends Controller
 {
@@ -65,6 +67,30 @@ class FileController extends Controller
                 'success' => false,
                 'error'   => cms_trans('upload.error.disallowed-type'),
             ]);
+        }
+
+        // Apply custom request-specified validation
+        $rules     = $request->getNormalizedValidationRules();
+        $validator = $this->getCustomValidator($file, $rules);
+
+        if ($validator) {
+            try {
+                if ($validator->fails()) {
+                    return response()->json([
+                        'success' => false,
+                        'error'   => implode("\n", array_get($validator->getMessageBag()->toArray(), 'file', [])),
+                    ]);
+                }
+            } catch (\Exception $e) {
+                cms()->log('error', "Error applying validation custom rules for uploaded file", [
+                    'file'  => $storePath,
+                    'rules' => $rules,
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'error'   => cms_trans('upload.error.validation-failed'),
+                ]);
+            }
         }
 
         $path = $file->move($storeDir, $fileName);
@@ -136,6 +162,26 @@ class FileController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Gets a validator for the uploaded file with custom request-specified rules.
+     *
+     * @param UploadedFile      $file
+     * @param array|string|null $rules
+     * @return \Illuminate\Validation\Validator|null
+     */
+    protected function getCustomValidator(UploadedFile $file, $rules)
+    {
+        if (null === $rules) {
+            return null;
+        }
+
+        if ( ! is_array($rules)) {
+            $rules = explode('|', $rules);
+        }
+
+        return Validator::make(['file' => $file], ['file' => $rules]);
     }
 
 }
