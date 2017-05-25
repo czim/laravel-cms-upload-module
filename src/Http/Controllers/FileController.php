@@ -50,11 +50,12 @@ class FileController extends Controller
      */
     public function store(UploadFileRequest $request)
     {
-        $fileName  = uniqid('upload');
+        $file = $request->file('file');
+
+        $fileName  = uniqid('upload') . '.' . $file->extension();
         $storeDir  = rtrim(config('cms-upload-module.upload.path'), '/');
         $storePath = $storeDir . '/' . $fileName;
 
-        $file     = $request->file('file');
         $mimeType = $file->getMimeType();
 
         if ( ! $this->fileChecker->check($file->getClientOriginalName(), $mimeType)) {
