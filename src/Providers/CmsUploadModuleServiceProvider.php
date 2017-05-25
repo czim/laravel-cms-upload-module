@@ -5,8 +5,10 @@ use Czim\CmsCore\Contracts\Core\CoreInterface;
 use Czim\CmsCore\Support\Enums\Component;
 use Czim\CmsUploadModule\Contracts\Repositories\FileRepositoryInterface;
 use Czim\CmsUploadModule\Contracts\Support\Security\FileCheckerInterface;
+use Czim\CmsUploadModule\Contracts\Support\Security\SessionGuardInterface;
 use Czim\CmsUploadModule\Repositories\FileRepository;
 use Czim\CmsUploadModule\Support\Security\FileChecker;
+use Czim\CmsUploadModule\Support\Security\SessionGuard;
 use Illuminate\Support\ServiceProvider;
 
 class CmsUploadModuleServiceProvider extends ServiceProvider
@@ -53,6 +55,7 @@ class CmsUploadModuleServiceProvider extends ServiceProvider
     {
         $this->app->singleton(FileRepositoryInterface::class, FileRepository::class);
         $this->app->singleton(FileCheckerInterface::class, FileChecker::class);
+        $this->app->singleton(SessionGuardInterface::class, SessionGuard::class);
 
         return $this;
     }

@@ -25,6 +25,11 @@ return [
         //
         'restrict' => [
 
+            // Whether session-guarding should be enabled.
+            // This is a security measure that only allows file manipulation/deletion
+            // within the Laravel session in which the file was uploaded.
+            'session' => true,
+
             // Extensions must be exact matches, no wildcards are allowed.
             'extensions' => [
                 // To allow anything, set to null.
