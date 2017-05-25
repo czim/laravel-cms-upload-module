@@ -45,6 +45,8 @@ class FileController extends Controller
     }
 
     /**
+     * Action: store a file record.
+     *
      * @param UploadFileRequest $request
      * @return mixed
      */
@@ -59,13 +61,20 @@ class FileController extends Controller
         $mimeType = $file->getMimeType();
 
         if ( ! $this->fileChecker->check($file->getClientOriginalName(), $mimeType)) {
-            abort(403, "Not allowed to upload file type");
+            return response()->json([
+                'success' => false,
+                'error'   => cms_trans('upload.error.disallowed-type'),
+            ]);
         }
 
         $path = $file->move($storeDir, $fileName);
 
-        if (false === $path || ! $this->files->exists($storePath)   ) {
-            abort(500, "Error moving uploaded file to {$storePath}");
+        if (false === $path || ! $this->files->exists($storePath)) {
+            cms()->log('error', "Error moving uploaded file to {$storePath}");
+            return response()->json([
+                'success' => false,
+                'error'   => cms_trans('upload.error.upload-failed'),
+            ]);
         }
 
         $data = [
@@ -76,7 +85,11 @@ class FileController extends Controller
         ];
 
         if ( ! ($record = $this->fileRepository->create($path, $data))) {
-            abort("Error saving record for uploaded file at {$storePath}");
+            cms()->log('error', "Error saving record for uploaded file at {$storePath}");
+            return response()->json([
+                'success' => false,
+                'error'   => cms_trans('upload.error.saving-record-failed'),
+            ]);
         }
 
         return response()->json([
@@ -90,23 +103,36 @@ class FileController extends Controller
     }
 
     /**
+     * Action: delete an existing file record.
+     *
      * @param int $id
      * @return mixed
      */
     public function destroy($id)
     {
         if ( ! ($record = $this->fileRepository->findById($id))) {
-            return abort(404, 'Could not find uploaded file');
+            return response()->json([
+                'success' => false,
+                'error'   => cms_trans('upload.error.file-not-found'),
+            ]);
         }
 
         if ($record->path && $this->files->exists($record->path)) {
             if ( ! $this->files->delete($record->path)) {
-                return abort(500, "Failed to delete uploaded file at {$record->path}");
+                cms()->log('error', "Failed to delete uploaded file at {$record->path}", ['id' => $id]);
+                return response()->json([
+                    'success' => false,
+                    'error'   => cms_trans('upload.error.file-not-found'),
+                ]);
             }
         }
 
         if ( ! $this->fileRepository->delete($id)) {
-            return abort(500, "Failed to delete uploaded file #{$id}");
+            cms()->log('error', "Failed to delete uploaded file #{$id}", ['id' => $id]);
+            return response()->json([
+                'success' => false,
+                'error'   => cms_trans('upload.error.file-not-found'),
+            ]);
         }
 
         return response()->json(['success' => true]);
