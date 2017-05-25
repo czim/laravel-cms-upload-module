@@ -116,7 +116,7 @@ Send a `POST` request to `<base>/cms/fileupload/file`, with the following data:
 - `file` (file content, required)  
     The file to be stored.
 
-- `name` (string, required)
+- `name` (string, required)  
     The (original) filename for the file to be stored. 
 
 - `reference` (string)  
