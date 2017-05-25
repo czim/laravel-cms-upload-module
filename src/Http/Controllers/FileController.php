@@ -4,6 +4,7 @@ namespace Czim\CmsUploadModule\Http\Controllers;
 use Czim\CmsCore\Contracts\Core\CoreInterface;
 use Czim\CmsUploadModule\Contracts\Repositories\FileRepositoryInterface;
 use Czim\CmsUploadModule\Contracts\Support\Security\FileCheckerInterface;
+use Czim\CmsUploadModule\Contracts\Support\Security\SessionGuardInterface;
 use Czim\CmsUploadModule\Http\Requests\UploadFileRequest;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
@@ -28,22 +29,30 @@ class FileController extends Controller
     protected $fileChecker;
 
     /**
+     * @var SessionGuardInterface
+     */
+    protected $sessionGuard;
+
+    /**
      * @param CoreInterface           $core
      * @param FileRepositoryInterface $fileRepository
      * @param Filesystem              $files
      * @param FileCheckerInterface    $fileChecker
+     * @param SessionGuardInterface   $sessionGuard
      */
     public function __construct(
         CoreInterface $core,
         FileRepositoryInterface $fileRepository,
         Filesystem $files,
-        FileCheckerInterface $fileChecker
+        FileCheckerInterface $fileChecker,
+        SessionGuardInterface $sessionGuard
     ) {
         parent::__construct($core);
 
         $this->files          = $files;
         $this->fileRepository = $fileRepository;
         $this->fileChecker    = $fileChecker;
+        $this->sessionGuard   = $sessionGuard;
     }
 
     /**
@@ -118,6 +127,10 @@ class FileController extends Controller
             ]);
         }
 
+        if ($this->sessionGuard->enabled()) {
+            $this->sessionGuard->link($record->getKey());
+        }
+
         return response()->json([
             'success'   => true,
             'id'        => $record->getKey(),
@@ -136,6 +149,13 @@ class FileController extends Controller
      */
     public function destroy($id)
     {
+        if ($this->sessionGuard->enabled() && ! $this->sessionGuard->check($id)) {
+            return response()->json([
+                'success' => false,
+                'error'   => cms_trans('upload.error.delete-failed'),
+            ]);
+        }
+
         if ( ! ($record = $this->fileRepository->findById($id))) {
             return response()->json([
                 'success' => false,
