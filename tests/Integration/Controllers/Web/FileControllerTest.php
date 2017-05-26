@@ -33,11 +33,9 @@ class FileControllerTest extends AbstractControllerIntegrationTest
             [],
             ['file' => $file],
             $this->getAjaxHeaders()
-        );
-
-        $this
-            ->seeStatusCode(200)
-            ->seeJson([
+        )
+            ->assertStatus(200)
+            ->assertJson([
                 'success'   => true,
                 'id'        => 1,
                 'reference' => 'REF:testing',
@@ -46,7 +44,7 @@ class FileControllerTest extends AbstractControllerIntegrationTest
                 'mimetype'  => 'text/plain',
             ]);
 
-        $this->seeInDatabase($this->prefixTable('file_uploads'), ['id' => 1]);
+        $this->assertDatabaseHas($this->prefixTable('file_uploads'), ['id' => 1]);
 
         if (file_exists($tmpPath)) {
             unlink($tmpPath);
@@ -74,11 +72,9 @@ class FileControllerTest extends AbstractControllerIntegrationTest
             [],
             ['file' => $file],
             $this->getAjaxHeaders()
-        );
-
-        $this
-            ->seeStatusCode(200)
-            ->seeJson([
+        )
+            ->assertStatus(200)
+            ->assertJson([
                 'success'   => true,
                 'id'        => 1,
                 'reference' => 'REF:testing',
@@ -113,11 +109,9 @@ class FileControllerTest extends AbstractControllerIntegrationTest
             [],
             ['file' => $file],
             $this->getAjaxHeaders()
-        );
-
-        $this
-            ->seeStatusCode(200)
-            ->seeJson([
+        )
+            ->assertStatus(200)
+            ->assertJson([
                 'success'   => true,
                 'id'        => 1,
                 'reference' => 'REF:testing',
@@ -143,9 +137,8 @@ class FileControllerTest extends AbstractControllerIntegrationTest
                 'name'      => 'upload_me.txt',
                 'reference' => 'REF:testing',
             ], [],  [], $this->getAjaxHeaders()
-        );
-
-        $this->seeStatusCode(422);
+        )
+            ->assertStatus(422);
     }
 
     /**
@@ -168,11 +161,9 @@ class FileControllerTest extends AbstractControllerIntegrationTest
             [],
             ['file' => $file],
             $this->getAjaxHeaders()
-        );
-
-        $this
-            ->seeStatusCode(200)
-            ->seeJson([
+        )
+            ->assertStatus(200)
+            ->assertJson([
                 'success' => false,
                 'error'   => 'The file must be a file of type: image/jpeg.',
             ]);
@@ -198,11 +189,9 @@ class FileControllerTest extends AbstractControllerIntegrationTest
             [],
             ['file' => $file],
             $this->getAjaxHeaders()
-        );
-
-        $this
-            ->seeStatusCode(200)
-            ->seeJson([
+        )
+            ->assertStatus(200)
+            ->assertJson([
                 'success' => false,
                 'error'   => 'upload.error.validation-failed', // translation key
             ]);
@@ -229,11 +218,9 @@ class FileControllerTest extends AbstractControllerIntegrationTest
             [],
             ['file' => $file],
             $this->getAjaxHeaders()
-        );
-
-        $this
-            ->seeStatusCode(200)
-            ->seeJson([
+        )
+            ->assertStatus(200)
+            ->assertJson([
                 'success' => false,
                 'error'   => 'upload.error.disallowed-type', // translation key
             ]);
@@ -260,13 +247,11 @@ class FileControllerTest extends AbstractControllerIntegrationTest
         $guard = $this->app->make(SessionGuardInterface::class);
         $guard->link($record->id);
 
-        $this->call('DELETE', route('cms::fileupload.file.delete', [$record->id]));
+        $this->call('DELETE', route('cms::fileupload.file.delete', [$record->id]))
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
 
-        $this
-            ->seeStatusCode(200)
-            ->seeJson(['success' => true]);
-
-        $this->notSeeInDatabase($this->prefixTable('file_uploads'), ['id' => $record->id]);
+        $this->assertDatabaseMissing($this->prefixTable('file_uploads'), ['id' => $record->id]);
 
         if (file_exists($path)) {
             unlink($path);
@@ -289,12 +274,11 @@ class FileControllerTest extends AbstractControllerIntegrationTest
         $guard = $this->app->make(SessionGuardInterface::class);
         $guard->link($record->id);
 
-        $this->call('DELETE', route('cms::fileupload.file.delete', [$record->id]));
-        $this
-            ->seeStatusCode(200)
-            ->seeJson(['success' => true]);
+        $this->call('DELETE', route('cms::fileupload.file.delete', [$record->id]))
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
 
-        $this->notSeeInDatabase($this->prefixTable('file_uploads'), ['id' => $record->id]);
+        $this->assertDatabaseMissing($this->prefixTable('file_uploads'), ['id' => $record->id]);
     }
 
     /**
@@ -307,10 +291,9 @@ class FileControllerTest extends AbstractControllerIntegrationTest
         $guard = $this->app->make(SessionGuardInterface::class);
         $guard->link(999);
 
-        $this->call('DELETE', route('cms::fileupload.file.delete', [999]));
-        $this
-            ->seeStatusCode(200)
-            ->seeJson([
+        $this->call('DELETE', route('cms::fileupload.file.delete', [999]))
+            ->assertStatus(200)
+            ->assertJson([
                 'success' => false,
                 'error'   => 'upload.error.file-not-found', // translation key
             ]);
@@ -327,10 +310,9 @@ class FileControllerTest extends AbstractControllerIntegrationTest
             'path'      => '/some/fake/path.txt',
         ]);
 
-        $this->call('DELETE', route('cms::fileupload.file.delete', [$record->id]));
-        $this
-            ->seeStatusCode(200)
-            ->seeJson([
+        $this->call('DELETE', route('cms::fileupload.file.delete', [$record->id]))
+            ->assertStatus(200)
+            ->assertJson([
                 'success' => false,
                 'error'   => 'upload.error.delete-failed', // translation key
             ]);
