@@ -260,16 +260,14 @@ class FileControllerTest extends AbstractControllerIntegrationTest
             [],
             ['file' => $file],
             $this->getAjaxHeaders()
-        );
-
-        $this
-            ->seeStatusCode(200)
-            ->seeJson([
+        )
+            ->assertStatus(200)
+            ->assertJson([
                 'success' => true,
                 'id'      => 2,
             ]);
 
-        $this->notSeeInDatabase($this->prefixTable('file_uploads'), ['id' => 1]);
+        $this->assertDatabaseMissing($this->prefixTable('file_uploads'), ['id' => 1]);
 
         if (file_exists($tmpPath)) {
             unlink($tmpPath);
