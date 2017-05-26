@@ -86,7 +86,7 @@ class FileRepositoryTest extends TestCase
 
         static::assertTrue($repository->delete(2));
 
-        $this->notSeeInDatabase('file_uploads', ['id' => 2]);
+        $this->assertDatabaseMissing('file_uploads', ['id' => 2]);
     }
 
 
