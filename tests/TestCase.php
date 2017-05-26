@@ -3,6 +3,7 @@ namespace Czim\CmsUploadModule\Test;
 
 use App\Console\Kernel;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Orchestra\Database\ConsoleServiceProvider;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -16,6 +17,19 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', $this->getDatabaseConfigForSqlite());
+    }
+
+    /**
+     * Get package providers.
+     *
+     * @param \Illuminate\Foundation\Application $app
+     * @return array
+     */
+    protected function getPackageProviders($app)
+    {
+        return [
+            ConsoleServiceProvider::class,
+        ];
     }
 
     /**
