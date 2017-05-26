@@ -40,9 +40,10 @@ interface FileRepositoryInterface
     /**
      * Deletes an uploaded file.
      *
-     * @param int $id
+     * @param int  $id
+     * @param bool $unlink      if true, also deletes the referenced file
      * @return bool
      */
-    public function delete($id);
+    public function delete($id, $unlink = true);
 
 }

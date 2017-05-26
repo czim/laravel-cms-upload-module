@@ -168,18 +168,6 @@ class FileController extends Controller
             ]);
         }
 
-        if ($record->path && $this->files->exists($record->path)) {
-            if ( ! $this->files->delete($record->path)) {
-                // @codeCoverageIgnoreStart
-                cms()->log('error', "Failed to delete uploaded file at {$record->path}", ['id' => $id]);
-                return response()->json([
-                    'success' => false,
-                    'error'   => cms_trans('upload.error.delete-failed'),
-                ]);
-                // @codeCoverageIgnoreEnd
-            }
-        }
-
         if ( ! $this->fileRepository->delete($id)) {
             // @codeCoverageIgnoreStart
             cms()->log('error', "Failed to delete uploaded file #{$id}", ['id' => $id]);

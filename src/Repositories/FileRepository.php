@@ -3,10 +3,24 @@ namespace Czim\CmsUploadModule\Repositories;
 
 use Czim\CmsUploadModule\Contracts\Repositories\FileRepositoryInterface;
 use Czim\CmsUploadModule\Models\File;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
 class FileRepository implements FileRepositoryInterface
 {
+
+    /**
+     * @var Filesystem
+     */
+    protected $files;
+
+    /**
+     * @param Filesystem $files
+     */
+    public function __construct(Filesystem $files)
+    {
+        $this->files = $files;
+    }
 
     /**
      * Creates a new record for a semi-permanent uploaded file.
@@ -57,12 +71,21 @@ class FileRepository implements FileRepositoryInterface
     /**
      * Deletes an uploaded file.
      *
-     * @param int $id
+     * @param int  $id
+     * @param bool $unlink      if true, also deletes the referenced file
      * @return bool
      */
-    public function delete($id)
+    public function delete($id, $unlink = true)
     {
-        return (bool) File::destroy($id);
+        if ( ! ($file = $this->findById($id))) {
+            return true;
+        }
+
+        if ($this->files->exists($file->path)) {
+            $this->files->delete($file->path);
+        }
+
+        return $file->delete();
     }
 
 }
