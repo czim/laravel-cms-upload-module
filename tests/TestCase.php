@@ -2,8 +2,6 @@
 namespace Czim\CmsUploadModule\Test;
 
 use App\Console\Kernel;
-use Czim\CmsCore\Providers\CmsCoreServiceProvider;
-use Czim\CmsCore\Support\Enums\Component;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
@@ -18,38 +16,6 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', $this->getDatabaseConfigForSqlite());
-
-        $app['config']->set('cms-modules.modules', []);
-        $app['config']->set('cms-core.testing', true);
-
-        $app['config']->set('cms-core.providers', [
-            \Czim\CmsCore\Providers\ModuleManagerServiceProvider::class,
-            \Czim\CmsCore\Providers\LogServiceProvider::class,
-            \Czim\CmsCore\Providers\RouteServiceProvider::class,
-            \Czim\CmsCore\Providers\MiddlewareServiceProvider::class,
-            \Czim\CmsCore\Providers\MigrationServiceProvider::class,
-            \Czim\CmsCore\Providers\ViewServiceProvider::class,
-            //\Czim\CmsAuth\Providers\CmsAuthServiceProvider::class,
-            //\Czim\CmsAuth\Providers\Api\OAuthSetupServiceProvider::class,
-            \Czim\CmsCore\Providers\Api\CmsCoreApiServiceProvider::class,
-            \Czim\CmsCore\Providers\Api\ApiRouteServiceProvider::class,
-        ]);
-
-        // Mock component bindings in the config
-        $app['config']->set(
-            'cms-core.bindings', [
-            Component::BOOTCHECKER => $this->getTestBootCheckerBinding(),
-            Component::CACHE       => \Czim\CmsCore\Core\Cache::class,
-            Component::CORE        => \Czim\CmsCore\Core\Core::class,
-            Component::MODULES     => \Czim\CmsCore\Modules\ModuleManager::class,
-            Component::AUTH        => \Czim\CmsAuth\Auth\Authenticator::class,
-            Component::API         => \Czim\CmsCore\Api\ApiCore::class,
-            Component::ACL         => \Czim\CmsCore\Auth\AclRepository::class,
-            Component::MENU        => \Czim\CmsCore\Menu\MenuRepository::class,
-            Component::AUTH        => \Czim\CmsAuth\Auth\Authenticator::class,
-        ]);
-
-        $app->register(CmsCoreServiceProvider::class);
     }
 
     /**
