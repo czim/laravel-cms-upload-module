@@ -3,6 +3,7 @@ namespace Czim\CmsUploadModule\Providers;
 
 use Czim\CmsCore\Contracts\Core\CoreInterface;
 use Czim\CmsCore\Support\Enums\Component;
+use Czim\CmsUploadModule\Console\Commands;
 use Czim\CmsUploadModule\Contracts\Repositories\FileRepositoryInterface;
 use Czim\CmsUploadModule\Contracts\Support\Security\FileCheckerInterface;
 use Czim\CmsUploadModule\Contracts\Support\Security\SessionGuardInterface;
@@ -31,6 +32,7 @@ class CmsUploadModuleServiceProvider extends ServiceProvider
 
         $this->registerConfig()
              ->registerInterfaceBindings()
+             ->registerCommands()
              ->publishMigrations();
     }
 
@@ -56,6 +58,22 @@ class CmsUploadModuleServiceProvider extends ServiceProvider
         $this->app->singleton(FileRepositoryInterface::class, FileRepository::class);
         $this->app->singleton(FileCheckerInterface::class, FileChecker::class);
         $this->app->singleton(SessionGuardInterface::class, SessionGuard::class);
+
+        return $this;
+    }
+
+    /**
+     * Register Upload CMS commands
+     *
+     * @return $this
+     */
+    protected function registerCommands()
+    {
+        $this->app->singleton('cms.commands.upload.cleanup', Commands\CleanUpFileUploads::class);
+
+        $this->commands([
+            'cms.commands.upload.cleanup',
+        ]);
 
         return $this;
     }

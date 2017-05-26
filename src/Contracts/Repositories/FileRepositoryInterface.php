@@ -46,4 +46,11 @@ interface FileRepositoryInterface
      */
     public function delete($id, $unlink = true);
 
+    /**
+     * Cleans up old upload records and files.
+     *
+     * @return int      Records deleted
+     */
+    public function cleanup();
+
 }

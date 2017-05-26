@@ -1,6 +1,7 @@
 <?php
 namespace Czim\CmsUploadModule\Repositories;
 
+use Carbon\Carbon;
 use Czim\CmsUploadModule\Contracts\Repositories\FileRepositoryInterface;
 use Czim\CmsUploadModule\Models\File;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -86,6 +87,41 @@ class FileRepository implements FileRepositoryInterface
         }
 
         return $file->delete();
+    }
+
+    /**
+     * Cleans up old upload records and files.
+     *
+     * @return int      Records deleted
+     */
+    public function cleanup()
+    {
+        // Find all files older than the given gc age
+        $fileIds = File::query()
+            ->where('created_at', '<', Carbon::now()->subMinutes($this->getGarbageAgeInMinutes()))
+            ->pluck('id');
+
+        if ( ! count($fileIds)) {
+            return 0;
+        }
+
+        $success = 0;
+
+        foreach ($fileIds as $fileId) {
+            $success += (int) $this->delete($fileId);
+        }
+
+        return $success;
+    }
+
+    /**
+     * Returns age in minutes after which records may be garbage collected.
+     *
+     * @return int
+     */
+    protected function getGarbageAgeInMinutes()
+    {
+        return (int) config('cms-upload-module.gc.age-minutes', 180);
     }
 
 }
