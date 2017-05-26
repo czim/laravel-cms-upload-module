@@ -12,6 +12,8 @@ to allow users of the CMS to upload files with AJAX requests.
 
 To be used to with the [Laravel CMS Core](https://github.com/czim/laravel-cms-core).
 
+This package is compatible and tested with Laravel 5.3 and 5.4.
+
 ## To Do
 
 This is a work in progress.
