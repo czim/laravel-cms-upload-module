@@ -1,6 +1,7 @@
 <?php
 namespace Czim\CmsUploadModule\Test\Repositories;
 
+use Carbon\Carbon;
 use Czim\CmsUploadModule\Models\File;
 use Czim\CmsUploadModule\Repositories\FileRepository;
 use Czim\CmsUploadModule\Test\TestCase;
@@ -114,6 +115,31 @@ class FileRepositoryTest extends TestCase
         $repository = new FileRepository;
 
         static::assertTrue($repository->delete(999));
+    }
+
+    /**
+     * @test
+     */
+    function it_performs_cleanup_by_removing_old_upload_records()
+    {
+        $this->seedRecords();
+
+        /** @var File $oldFile */
+        $oldFile = File::find(1);
+        $oldFile->created_at = Carbon::now()->subMonth();
+        $oldFile->updated_at = Carbon::now()->subMonth();
+        $oldFile->save();
+
+        $repository = new FileRepository;
+
+        // Should delete just the first record
+        static::assertEquals(1, $repository->cleanup());
+
+        $this->seeInDatabase('file_uploads', ['id' => 2]);
+        $this->notSeeInDatabase('file_uploads', ['id' => 1]);
+
+        // Should silently return 0 if there's nothing to clean up
+        static::assertEquals(0, $repository->cleanup());
     }
 
 

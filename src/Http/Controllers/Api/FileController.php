@@ -8,6 +8,13 @@ use Czim\CmsUploadModule\Http\Controllers\Controller;
 use Czim\CmsUploadModule\Http\Requests\UploadFileRequest;
 use Illuminate\Filesystem\Filesystem;
 
+/**
+ * Class FileController
+ *
+ * @todo plan the API and implement this
+ *
+ * @codeCoverageIgnore
+ */
 class FileController extends Controller
 {
 
