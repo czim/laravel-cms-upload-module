@@ -1,6 +1,7 @@
 <?php
 namespace Czim\CmsUploadModule\Test\Integration\Controllers\Web;
 
+use Carbon\Carbon;
 use Czim\CmsUploadModule\Contracts\Support\Security\SessionGuardInterface;
 use Czim\CmsUploadModule\Models\File;
 use Czim\CmsUploadModule\Test\Integration\Controllers\AbstractControllerIntegrationTest;
@@ -238,6 +239,56 @@ class FileControllerTest extends AbstractControllerIntegrationTest
                 'error'   => 'upload.error.disallowed-type', // translation key
             ]);
     }
+
+    /**
+     * @test
+     */
+    function it_performs_garbage_collection_by_lottery_on_store()
+    {
+        $tmpPath = $this->prepareTempUploadedFilePath();
+
+        $this->app['config']->set('cms-upload-module.gc.enabled', true);
+        $this->app['config']->set('cms-upload-module.gc.lottery', [1,1]);
+
+        // Seed databae with 'old' record
+        $record = File::create([
+            'path'      => '/test/path/some_file.txt',
+            'reference' => 'some reference',
+            'name'      => 'some_file.txt',
+            'uploader'  => 'test@user.com',
+            'file_size' => 1000,
+        ]);
+        $record->updated_at = Carbon::now()->subMonth();
+        $record->created_at = Carbon::now()->subMonth();
+        $record->save();
+
+
+        $file = new UploadedFile($tmpPath, pathinfo($tmpPath, PATHINFO_BASENAME), filesize($tmpPath), 'text/plain', null, true);
+
+
+        $this->call(
+            'POST',
+            route('cms::fileupload.file.upload'),
+            ['name' => 'upload_me.txt'],
+            [],
+            ['file' => $file],
+            $this->getAjaxHeaders()
+        );
+
+        $this
+            ->seeStatusCode(200)
+            ->seeJson([
+                'success' => true,
+                'id'      => 2,
+            ]);
+
+        $this->notSeeInDatabase($this->prefixTable('file_uploads'), ['id' => 1]);
+
+        if (file_exists($tmpPath)) {
+            unlink($tmpPath);
+        }
+    }
+
 
     // ------------------------------------------------------------------------------
     //      Delete

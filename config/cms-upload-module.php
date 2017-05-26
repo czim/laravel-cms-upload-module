@@ -69,7 +69,10 @@ return [
     'gc' => [
 
         // Whether automatic garbage collection is enabled.
-        'enabled' => false,
+        'enabled' => true,
+
+        // Probability (x out of y) that garbage collection takes place on new stores.
+        'lottery' => [1, 100],
 
         // Uploads must be at least this many minutes old to be cleaned up.
         'age-minutes' => 24 * 60,

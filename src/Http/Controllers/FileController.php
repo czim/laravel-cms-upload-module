@@ -136,6 +136,8 @@ class FileController extends Controller
             $this->sessionGuard->link($record->getKey());
         }
 
+        $this->performGarbageCollection();
+
         return response()->json([
             'success'   => true,
             'id'        => $record->getKey(),
@@ -199,6 +201,24 @@ class FileController extends Controller
         }
 
         return Validator::make(['file' => $file], ['file' => $rules]);
+    }
+
+    /**
+     * Performs garbage collection based on lottery.
+     */
+    protected function performGarbageCollection()
+    {
+        if ( ! config('cms-upload-module.gc.enabled', true)) {
+            return;
+        }
+
+        list($probability, $total) = config('cms-upload-module.gc.lottery', [0, 0]);
+
+        if ($probability < 1 || $total < 1 || rand(0, $total) > $probability) {
+            return;
+        }
+
+        $this->fileRepository->cleanup();
     }
 
 }
