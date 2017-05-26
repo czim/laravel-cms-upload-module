@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/czim/laravel-cms-upload-module.svg?branch=master)](https://travis-ci.org/czim/laravel-cms-upload-module)
 [![Coverage Status](https://coveralls.io/repos/github/czim/laravel-cms-upload-module/badge.svg?branch=master)](https://coveralls.io/github/czim/laravel-cms-upload-module?branch=master)
 
+
 # CMS for Laravel - File uploader module
 
 Simple file uploading module for the CMS.
@@ -13,17 +14,6 @@ to allow users of the CMS to upload files with AJAX requests.
 To be used to with the [Laravel CMS Core](https://github.com/czim/laravel-cms-core).
 
 This package is compatible and tested with Laravel 5.3 and 5.4.
-
-
-## To Do
-
-This is a work in progress. The following items need to be addressed:
-
-- [ ] Garbage collection:
-    - [ ] configuration
-    - [ ] job & artisan command
-    - [ ] auto-cleanup files on new uploads
-- [ ] API controller & routes
 
 
 ## Installation
@@ -234,6 +224,21 @@ It features form display strategies for [Stapler file](https://github.com/czim/l
 and [image](https://github.com/czim/laravel-cms-models/blob/master/src/Strategies/Form/Display/AttachmentStaplerImageStrategy.php) 
 uploads, and a [store strategy](https://github.com/czim/laravel-cms-models/blob/master/src/Strategies/Form/Store/StaplerStrategy.php) 
 that uses the upload module if it is loaded.
+
+
+## Garbage Collection
+
+Uploaded files that are not used, may clutter and bloat your application.
+
+To help prevent this, automatic garbage collection is enabled by default.
+This works by lottery (there's a 1% chance for each file upload that cleanup is performed), 
+and cleanup will delete files older than a day (but this time is configurable).
+
+There is also an Artisan command available to perform cleanup:
+
+```bash
+php artisan cms:upload:cleanup
+```
 
 
 ## Contributing
