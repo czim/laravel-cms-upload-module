@@ -6,6 +6,7 @@ use Czim\CmsUploadModule\Contracts\Repositories\FileRepositoryInterface;
 use Czim\CmsUploadModule\Contracts\Support\Security\FileCheckerInterface;
 use Czim\CmsUploadModule\Contracts\Support\Security\SessionGuardInterface;
 use Czim\CmsUploadModule\Http\Requests\UploadFileRequest;
+use Exception;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
 use Validator;
@@ -90,7 +91,7 @@ class FileController extends Controller
                         'error'   => implode("\n", array_get($validator->getMessageBag()->toArray(), 'file', [])),
                     ]);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 cms()->log('error', "Error applying validation custom rules for uploaded file", [
                     'file'  => $storePath,
                     'rules' => $rules,
@@ -105,11 +106,13 @@ class FileController extends Controller
         $path = $file->move($storeDir, $fileName);
 
         if (false === $path || ! $this->files->exists($storePath)) {
+            // @codeCoverageIgnoreStart
             cms()->log('error', "Error moving uploaded file to {$storePath}");
             return response()->json([
                 'success' => false,
                 'error'   => cms_trans('upload.error.upload-failed'),
             ]);
+            // @codeCoverageIgnoreEnd
         }
 
         $data = [
@@ -120,11 +123,13 @@ class FileController extends Controller
         ];
 
         if ( ! ($record = $this->fileRepository->create($path, $data))) {
+            // @codeCoverageIgnoreStart
             cms()->log('error', "Error saving record for uploaded file at {$storePath}");
             return response()->json([
                 'success' => false,
                 'error'   => cms_trans('upload.error.saving-record-failed'),
             ]);
+            // @codeCoverageIgnoreEnd
         }
 
         if ($this->sessionGuard->enabled()) {
@@ -165,20 +170,24 @@ class FileController extends Controller
 
         if ($record->path && $this->files->exists($record->path)) {
             if ( ! $this->files->delete($record->path)) {
+                // @codeCoverageIgnoreStart
                 cms()->log('error', "Failed to delete uploaded file at {$record->path}", ['id' => $id]);
                 return response()->json([
                     'success' => false,
                     'error'   => cms_trans('upload.error.delete-failed'),
                 ]);
+                // @codeCoverageIgnoreEnd
             }
         }
 
         if ( ! $this->fileRepository->delete($id)) {
+            // @codeCoverageIgnoreStart
             cms()->log('error', "Failed to delete uploaded file #{$id}", ['id' => $id]);
             return response()->json([
                 'success' => false,
                 'error'   => cms_trans('upload.error.delete-failed'),
             ]);
+            // @codeCoverageIgnoreEnd
         }
 
         return response()->json(['success' => true]);
