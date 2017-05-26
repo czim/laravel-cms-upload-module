@@ -4,7 +4,7 @@ namespace Czim\CmsUploadModule\Test\Repositories;
 use Czim\CmsUploadModule\Models\File;
 use Czim\CmsUploadModule\Repositories\FileRepository;
 use Czim\CmsUploadModule\Test\TestCase;
-use Illuminate\Contracts\Filesystem\Filesystem;
+use File as FileFacade;
 use Illuminate\Support\Collection;
 
 class FileRepositoryTest extends TestCase
@@ -15,7 +15,7 @@ class FileRepositoryTest extends TestCase
      */
     function it_creates_a_new_file_record()
     {
-        $repository = new FileRepository($this->getFilesystem());
+        $repository = new FileRepository;
 
         $record = $repository->create('/test/path/some_file.txt', [
             'reference' => 'some reference',
@@ -35,7 +35,7 @@ class FileRepositoryTest extends TestCase
     {
         $this->seedRecords();
 
-        $repository = new FileRepository($this->getFilesystem());
+        $repository = new FileRepository;
 
         $records = $repository->getAll();
 
@@ -52,7 +52,7 @@ class FileRepositoryTest extends TestCase
     {
         $this->seedRecords();
 
-        $repository = new FileRepository($this->getFilesystem());
+        $repository = new FileRepository;
 
         $record = $repository->findById(2);
 
@@ -67,7 +67,7 @@ class FileRepositoryTest extends TestCase
     {
         $this->seedRecords();
 
-        $repository = new FileRepository($this->getFilesystem());
+        $repository = new FileRepository;
 
         $records = $repository->findByReference('some reference');
 
@@ -84,12 +84,12 @@ class FileRepositoryTest extends TestCase
         $this->seedRecords();
         $this->prepareRecordFilePath(2);
 
-        $repository = new FileRepository($this->getFilesystem());
+        $repository = new FileRepository;
 
         static::assertTrue($repository->delete(2));
 
         $this->notSeeInDatabase('file_uploads', ['id' => 2]);
-        static::assertFalse($this->getFilesystem()->exists(storage_path('testing.txt')));
+        static::assertFalse(FileFacade::exists(storage_path('testing.txt')));
     }
 
     /**
@@ -99,7 +99,7 @@ class FileRepositoryTest extends TestCase
     {
         $this->seedRecords();
 
-        $repository = new FileRepository($this->getFilesystem());
+        $repository = new FileRepository;
 
         static::assertTrue($repository->delete(2));
 
@@ -111,7 +111,7 @@ class FileRepositoryTest extends TestCase
      */
     function it_silently_ignores_file_record_not_found_on_delete()
     {
-        $repository = new FileRepository($this->getFilesystem());
+        $repository = new FileRepository;
 
         static::assertTrue($repository->delete(999));
     }
@@ -145,17 +145,9 @@ class FileRepositoryTest extends TestCase
     {
         $path = storage_path('testing.txt');
 
-        $this->getFilesystem()->put($path, 'test.');
+        FileFacade::put($path, 'test.');
 
         File::find($id)->update(['path' => $path]);
-    }
-
-    /**
-     * @return Filesystem
-     */
-    protected function getFilesystem()
-    {
-        return $this->app->make(Filesystem::class);
     }
 
 }
