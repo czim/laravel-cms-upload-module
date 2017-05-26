@@ -89,7 +89,7 @@ class FileRepositoryTest extends TestCase
 
         static::assertTrue($repository->delete(2));
 
-        $this->notSeeInDatabase('file_uploads', ['id' => 2]);
+        $this->assertDatabaseMissing('file_uploads', ['id' => 2]);
         static::assertFalse(FileFacade::exists(storage_path('testing.txt')));
     }
 
@@ -104,7 +104,7 @@ class FileRepositoryTest extends TestCase
 
         static::assertTrue($repository->delete(2));
 
-        $this->notSeeInDatabase('file_uploads', ['id' => 2]);
+        $this->assertDatabaseMissing('file_uploads', ['id' => 2]);
     }
 
     /**
@@ -135,8 +135,8 @@ class FileRepositoryTest extends TestCase
         // Should delete just the first record
         static::assertEquals(1, $repository->cleanup());
 
-        $this->seeInDatabase('file_uploads', ['id' => 2]);
-        $this->notSeeInDatabase('file_uploads', ['id' => 1]);
+        $this->assertDatabaseHas('file_uploads', ['id' => 2]);
+        $this->assertDatabaseMissing('file_uploads', ['id' => 1]);
 
         // Should silently return 0 if there's nothing to clean up
         static::assertEquals(0, $repository->cleanup());
