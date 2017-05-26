@@ -71,7 +71,7 @@ The happy-path flow for a user using a CMS form:
 3. User submits form.
 4. Data is stored.
 
-However, when a validation error, or other problem occurs after form submission:
+However, when a validation error or some other problem occurs after form submission:
 
 1. Form displays.
 2. User selects files for upload and enters some data.
@@ -178,6 +178,19 @@ $records = $repository->findByReference($referenceString);
 
 
 ### Security
+
+As with any module, only authenticated CMS users can access its routes. 
+
+Additionally a non-admin user must have the following permissions:
+
+| Permission key         | Description       |
+| ---------------------- | ----------------- |
+| fileupload.file.create | Upload new files. |
+| fileupload.file.delete | Delete (your own) uploaded files.  |
+
+Or simply set `fileupload.file.*` for all of the above.
+
+#### Session Guard
 
 Asynchronous uploads require special attention to security.
 
