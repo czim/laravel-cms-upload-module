@@ -14,24 +14,16 @@ To be used to with the [Laravel CMS Core](https://github.com/czim/laravel-cms-co
 
 This package is compatible and tested with Laravel 5.3 and 5.4.
 
+
 ## To Do
 
-This is a work in progress.
+This is a work in progress. The following items need to be addressed:
 
-- [x] Database migrations
-- [x] File repository
-- [x] Web controller and (ajax/json) responses
-- [x] Security
-    - [x] configuration
-- [x] Validation rules
-- [ ] Tests
 - [ ] Garbage collection:
     - [ ] configuration
-    - [ ] artisan command
+    - [ ] job & artisan command
     - [ ] auto-cleanup files on new uploads
 - [ ] API controller & routes
-- [ ] Use in cms-models file/image upload strategies (if module loaded)
-    - [ ] make a strategy option to block use of this
 
 
 ## Installation
