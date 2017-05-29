@@ -37,10 +37,16 @@ Add the service provider to your `cms-core.php` configuration file:
     ],
 ```
 
-To publish the config:
+To publish the config and migration:
 
 ``` bash
 php artisan vendor:publish
+```
+
+Run the CMS migration:
+
+```bash
+php artisan cms:migrate
 ```
 
 
