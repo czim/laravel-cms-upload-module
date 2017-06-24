@@ -19,6 +19,8 @@ class FileControllerTest extends AbstractControllerIntegrationTest
      */
     function it_stores_a_file_without_validation()
     {
+        $this->app['config']->set('cms-upload-module.gc.enabled', false);
+
         $tmpPath = $this->prepareTempUploadedFilePath();
 
         $file = new UploadedFile($tmpPath, pathinfo($tmpPath, PATHINFO_BASENAME), filesize($tmpPath), 'text/plain', null, true);
