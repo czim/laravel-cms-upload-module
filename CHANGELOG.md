@@ -5,6 +5,7 @@
 ### [1.0.3] - 2018-02-16
 
 - Lowered varchar length from 255 to 191 in the `file_uploads` migration in order to support utf8mb4.
+- Increased minimum required PHP version to reflect actual support.
 
 
 ### [1.0.2] - 2017-05-26
