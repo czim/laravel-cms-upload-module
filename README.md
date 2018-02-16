@@ -16,6 +16,11 @@ To be used to with the [Laravel CMS Core](https://github.com/czim/laravel-cms-co
 This package is compatible and tested with Laravel 5.3 and 5.4.
 
 
+## Changelog
+
+[View the changelog](CHANGELOG.md).
+
+
 ## Installation
 
 Add the module class to your `cms-modules.php` configuration file:
